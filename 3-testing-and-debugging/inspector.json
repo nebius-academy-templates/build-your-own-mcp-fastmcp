@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "log-triage": {
+      "command": "uv",
+      "args": ["run", "--project", "../solution", "log-triage", "--root", "../s3_logs", "--reports", "../reports"],
+      "protocolEra": "modern"
+    },
+    "log-triage-read-only": {
+      "command": "uv",
+      "args": ["run", "--project", "../solution", "log-triage", "--root", "../s3_logs", "--read-only"],
+      "protocolEra": "modern"
+    },
+    "log-triage-debug": {
+      "command": "uv",
+      "args": ["run", "--project", "../solution", "log-triage", "--root", "../s3_logs", "--read-only", "--log-level", "debug"],
+      "protocolEra": "modern"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+[project]
+name = "log-triage-checks-4"
+version = "0.4.0"
+description = "Black-box checks for practice 4: they start your server over HTTP and talk to it as several callers."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "fastmcp==4.0.3",
+    "pytest>=8.3",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+addopts = "-ra --tb=short"

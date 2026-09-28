@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.env
+*.env
+!tokens.example.env
+.mcp.json
+.DS_Store
+.idea/
+.vscode/
+*.swp

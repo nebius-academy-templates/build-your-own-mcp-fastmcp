@@ -1,0 +1,18 @@
+[project]
+name = "log-triage-checks-3"
+version = "0.3.0"
+description = "Black-box checks for practice 3: they start your server, talk to it over MCP, and run your own tests."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "fastmcp==4.0.3",
+    "jsonschema>=4.23",
+    "pytest>=8.3",
+    "pytest-asyncio>=1.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+addopts = "-ra --tb=short"
