@@ -27,7 +27,7 @@ What your server publishes after this practice. Every name, type, bound, default
 | Name | `log-triage` |
 | Version | `0.4.0` |
 | Python | package `logtriage`, console script `log-triage`, Python 3.13, `fastmcp==4.0.3` |
-| Go | module `github.com/nebius-academy-templates/build-your-own-mcp-go-sdk/server`, command `cmd/log-triage`, Go 1.26, `github.com/modelcontextprotocol/go-sdk v1.7.0` |
+| Go | module `github.com/nebius-academy-templates/build-your-own-mcp-go-sdk/server`, command `cmd/log-triage`, Go 1.27.1, `github.com/modelcontextprotocol/go-sdk v1.7.0` |
 | Transport | stdio by default; streamable HTTP at `/mcp` with `--http` (section 7) |
 | `instructions` | the text in section 8 |
 

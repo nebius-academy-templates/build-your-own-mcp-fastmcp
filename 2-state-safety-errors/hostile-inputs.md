@@ -16,33 +16,37 @@ Inputs a careless or malicious caller can send, and what your server must answer
 - `2-state-safety-errors/inspector.json`
 
 ## Build a hostile log root
-`s3_logs/` has no symlinks, no broken archives and no huge files, so build a small log root that has them. The block works in bash and zsh on macOS and Linux, and only writes under `/tmp/log-triage-hostile`:
+`s3_logs/` has no symlinks, no broken archives and no huge files, so build a small log root that has them. Run this block from `2-state-safety-errors/` in bash or zsh on macOS or Linux. It creates a unique temporary folder and a matching Inspector config:
 
 ```bash
-H=/tmp/log-triage-hostile
-rm -rf "$H"
-mkdir -p "$H/outside" "$H/reports" "$H/logs/walk" "$H/logs/broken" "$H/logs/cut" "$H/logs/big" "$H/logs/long"
-printf '%s\n' '2026-01-15T09:00:00.000Z INFO vault outside the root, never served' > "$H/outside/secret.log"
-printf '%s\n' '2026-01-15T10:00:00.000Z INFO api request served' '2026-01-15T10:00:01.000Z WARN api request slow' '2026-01-15T10:00:02.000Z ERROR api request failed' > "$H/logs/app.log"
-ln -s ../outside/secret.log "$H/logs/link-out.log"
-ln -s app.log "$H/logs/link-in.log"
-ln -s ../outside "$H/logs/linkdir"
-printf '%s\n' '2026-01-15T10:05:00.000Z INFO walker step one' '2026-01-15T10:05:01.000Z ERROR walker step two' > "$H/logs/walk/good.log"
-ln -s ../app.log "$H/logs/walk/zz-link.log"
-ln -s ../../outside "$H/logs/walk/sub-link"
-printf 'this is not gzip data\n' > "$H/logs/broken/bad.log.gz"
-printf '%s\n' '2026-01-15T10:06:00.000Z INFO mender still readable' > "$H/logs/broken/good.log"
-seq 1 5000 | sed 's/.*/2026-01-15T10:07:00.000Z INFO copier chunk & copied/' | gzip -c > "$H/cut.gz"
-head -c $(( $(wc -c < "$H/cut.gz") / 2 )) "$H/cut.gz" > "$H/logs/cut/cut.log.gz"
-rm "$H/cut.gz"
-yes '2026-01-15T10:00:00.000Z INFO filler padding line for the size cap' | head -n 1001625 | gzip -c > "$H/logs/big/huge.log.gz"
-seq 1 60 | sed 's/.*/2026-01-15T10:08:00.000Z INFO filler sparse head line &/' > "$H/logs/big/sparse.log"
-dd if=/dev/zero of="$H/logs/big/sparse.log" bs=1 count=1 seek=67108864 conv=notrunc 2>/dev/null
-printf '%s\n' '2026-01-15T10:09:00.000Z INFO stretcher short line' > "$H/logs/long/long.log"
-printf '2026-01-15T10:09:01.000Z INFO stretcher long line %s TAIL\n' "$(printf '%70000s' '' | tr ' ' x)" >> "$H/logs/long/long.log"
+HOSTILE_PARENT=${TMPDIR:-/tmp}
+HOSTILE_ROOT=$(mktemp -d "$HOSTILE_PARENT/log-triage-hostile.XXXXXX") || return 1
+mkdir -p "$HOSTILE_ROOT/outside" "$HOSTILE_ROOT/reports" "$HOSTILE_ROOT/logs/walk" "$HOSTILE_ROOT/logs/broken" "$HOSTILE_ROOT/logs/cut" "$HOSTILE_ROOT/logs/big" "$HOSTILE_ROOT/logs/long"
+printf '%s\n' '2026-01-15T09:00:00.000Z INFO vault outside the root, never served' > "$HOSTILE_ROOT/outside/secret.log"
+printf '%s\n' '2026-01-15T10:00:00.000Z INFO api request served' '2026-01-15T10:00:01.000Z WARN api request slow' '2026-01-15T10:00:02.000Z ERROR api request failed' > "$HOSTILE_ROOT/logs/app.log"
+ln -s ../outside/secret.log "$HOSTILE_ROOT/logs/link-out.log"
+ln -s app.log "$HOSTILE_ROOT/logs/link-in.log"
+ln -s ../outside "$HOSTILE_ROOT/logs/linkdir"
+printf '%s\n' '2026-01-15T10:05:00.000Z INFO walker step one' '2026-01-15T10:05:01.000Z ERROR walker step two' > "$HOSTILE_ROOT/logs/walk/good.log"
+ln -s ../app.log "$HOSTILE_ROOT/logs/walk/zz-link.log"
+ln -s ../../outside "$HOSTILE_ROOT/logs/walk/sub-link"
+printf 'this is not gzip data\n' > "$HOSTILE_ROOT/logs/broken/bad.log.gz"
+printf '%s\n' '2026-01-15T10:06:00.000Z INFO mender still readable' > "$HOSTILE_ROOT/logs/broken/good.log"
+seq 1 5000 | sed 's/.*/2026-01-15T10:07:00.000Z INFO copier chunk & copied/' | gzip -c > "$HOSTILE_ROOT/cut.gz"
+head -c $(( $(wc -c < "$HOSTILE_ROOT/cut.gz") / 2 )) "$HOSTILE_ROOT/cut.gz" > "$HOSTILE_ROOT/logs/cut/cut.log.gz"
+rm "$HOSTILE_ROOT/cut.gz"
+yes '2026-01-15T10:00:00.000Z INFO filler padding line for the size cap' | head -n 1001625 | gzip -c > "$HOSTILE_ROOT/logs/big/huge.log.gz"
+seq 1 60 | sed 's/.*/2026-01-15T10:08:00.000Z INFO filler sparse head line &/' > "$HOSTILE_ROOT/logs/big/sparse.log"
+dd if=/dev/zero of="$HOSTILE_ROOT/logs/big/sparse.log" bs=1 count=1 seek=67108864 conv=notrunc 2>/dev/null
+printf '%s\n' '2026-01-15T10:09:00.000Z INFO stretcher short line' > "$HOSTILE_ROOT/logs/long/long.log"
+printf '2026-01-15T10:09:01.000Z INFO stretcher long line %s TAIL\n' "$(printf '%70000s' '' | tr ' ' x)" >> "$HOSTILE_ROOT/logs/long/long.log"
+REPO_ROOT=$(cd .. && pwd -P)
+HOSTILE_CONFIG="$HOSTILE_ROOT/inspector.json"
+node -e 'const fs=require("fs"); const [repo,root,out]=process.argv.slice(1); const c=JSON.parse(fs.readFileSync("inspector.json","utf8")); c.mcpServers["log-triage-hostile"].args=["run","--project",repo+"/solution","log-triage","--root",root+"/logs","--reports",root+"/reports"]; fs.writeFileSync(out,JSON.stringify(c,null,2)+"\n")' "$REPO_ROOT" "$HOSTILE_ROOT" "$HOSTILE_CONFIG"
+printf 'Hostile root: %s\n' "$HOSTILE_ROOT"
 ```
 
-What it makes, under `/tmp/log-triage-hostile`:
+What it makes under the folder printed by `printf '%s\n' "$HOSTILE_ROOT"`:
 
 | Path | What it is |
 |---|---|
@@ -60,7 +64,7 @@ What it makes, under `/tmp/log-triage-hostile`:
 | `logs/long/long.log` | A file whose second line is 70,055 characters long |
 | `reports/` | Where findings go, outside the log root |
 
-The `log-triage-hostile` server in `inspector.json` runs your server on this root. On macOS `/tmp` is itself a symlink: the root may sit under one, and your server must still serve it.
+The generated `$HOSTILE_CONFIG` gives `log-triage-hostile` absolute paths to this unique root and the repository's `solution/`. On macOS `/tmp` is itself a symlink: the root may sit under one, and your server must still serve it.
 
 ## Try the inputs
 From this folder, one call per input:
@@ -68,7 +72,7 @@ From this folder, one call per input:
 Use the direct Inspector CLI here to select the configured hostile-input server and make an exact `tools/call` request. The `inspector.json` config pins the modern protocol; `fastmcp dev inspector` cannot load it and defaults to the older legacy handshake.
 
 ```bash
-npx @modelcontextprotocol/inspector --cli --config inspector.json --server log-triage-hostile --method tools/call --tool-name read_lines --tool-args-json '{"path": "link-out.log", "line": 1}' --format json
+npx @modelcontextprotocol/inspector --cli --config "$HOSTILE_CONFIG" --server log-triage-hostile --method tools/call --tool-name read_lines --tool-args-json '{"path": "link-out.log", "line": 1}' --format json
 ```
 
 Change `--tool-name` and `--tool-args-json` for each row. A refused call prints its result on stdout, with the text to compare, and exits with code 5; stderr then shows `{"error":{"code":"tool_is_error",...}}`. `\u0000` inside the JSON is a NUL character.
@@ -106,5 +110,9 @@ E1, E2 and E10 are the texts in `CONTRACT.md`, section 5. The error text quotes 
 When you're done, remove the folder:
 
 ```bash
-rm -rf /tmp/log-triage-hostile
+case "$HOSTILE_ROOT" in
+  "$HOSTILE_PARENT"/log-triage-hostile.*) rm -r -- "$HOSTILE_ROOT" ;;
+  *) printf 'Refusing to remove unexpected path: %s\n' "$HOSTILE_ROOT" >&2; return 1 ;;
+esac
+unset HOSTILE_CONFIG HOSTILE_PARENT HOSTILE_ROOT REPO_ROOT
 ```

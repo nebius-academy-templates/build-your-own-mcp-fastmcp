@@ -15,13 +15,13 @@ Tick each item when it is true, then commit. Where an item asks for a note, writ
 - `2-state-safety-errors/CONTRACT.md`
 
 ## Design
-- [ ] Every row of `interface.md` is filled in.
+- [ ] Every row of `interface.md` is filled in with your own answers, written before you opened `CONTRACT.md`.
 - [ ] `interface.md` names where your design differs from `CONTRACT.md`, or says it doesn't.
 
 ## Server
 - [ ] `cd 2-state-safety-errors/checks && uv run pytest` passes, run from the repository root.
 - [ ] `cd 1-surface-and-contract/checks && uv run pytest` still passes.
-- [ ] Every checkpoint in the README was true when its prompt finished. Note any that wasn't, and what you did about it.
+- [ ] Every checkpoint in the practice lesson was true when its prompt finished. Note any that wasn't, and what you did about it.
 - [ ] Nothing in `solution/` names a host, a date, an address or a message from `s3_logs/`.
 - [ ] `solution/README.md` names `--scan-ttl`.
 

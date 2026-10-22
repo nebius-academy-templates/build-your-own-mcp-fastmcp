@@ -32,6 +32,7 @@ Work through them in order. Each one continues the server the previous one left.
 | 2 | [2-state-safety-errors](2-state-safety-errors/README.md) | Scan handles, two tools to page a group's lines and read around a line, resources, path screening, exact error texts and masking |
 | 3 | [3-testing-and-debugging](3-testing-and-debugging/README.md) | Your own unit, protocol and meaning tests, a scripted probe, planted bugs, logging, and a timeline tool |
 | 4 | [4-agents-and-clients](4-agents-and-clients/README.md) | HTTP with bearer tokens, callers and a read-only caller, a triage prompt, and the server in two agent hosts |
+| 5 | [5-telemetry](5-telemetry/README.md) | OTLP tracing, caller context, per-file read spans, and a traced investigation |
 
 ## Prerequisites
 | Tool | Version | Used for |
@@ -43,6 +44,7 @@ Work through them in order. Each one continues the server the previous one left.
 | An agent host | Claude Code or another coding agent that can use MCP servers | building the server and asking the questions |
 | A second agent host | Codex CLI or another host that can use MCP servers over HTTP | practice 4 |
 | git | any recent version | committing each practice |
+| LangSmith account | the free Developer plan | the trace backend in practice 5, beside a supplied local viewer |
 
 ## How to start
 1. Clone this repository and open it in your agent host at the repository root.
@@ -63,7 +65,7 @@ reports/              where your server saves findings; commit them
 solution/             your MCP server; it starts with only a README
 ```
 
-All four practice folders are in the clone from the start. Open them in lesson order. Each holds its own `README.md`, `CLAUDE.md`, `AGENTS.md`, `CONTRACT.md`, `CHECKLIST.md`, `inspector.json`, a `checks/` suite and the stage's worksheets.
+All five practice folders are in the clone from the start. Open them in lesson order. Each holds its own `README.md`, `CLAUDE.md`, `AGENTS.md`, `CONTRACT.md`, `CHECKLIST.md`, `inspector.json`, a `checks/` suite and the stage's worksheets.
 
 Use the direct `npx @modelcontextprotocol/inspector` commands in each practice README. FastMCP 4.0.3's `fastmcp dev inspector` wrapper passes the Inspector a bare `fastmcp run ... --no-banner` command. It cannot load `inspector.json` or select the protocol era, so the Inspector defaults to legacy `2025-11-25`. In that handshake, `tools/list` carries only tools, and the Protocol tab cannot show modern metadata such as `resultType`, `ttlMs` and `cacheScope`. Each practice config sets `protocolEra` to `modern`, which pins protocol `2026-07-28` and exposes those fields.
 

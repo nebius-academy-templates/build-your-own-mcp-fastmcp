@@ -10,7 +10,7 @@
 These rules take priority over the repository root's `CLAUDE.md` wherever the two differ. `AGENTS.md` in this folder is an identical copy.
 
 ## What this practice builds
-The fourth and last version of the Log Triage server, in `solution/`, on top of what practices 1 to 3 built, with FastMCP 4.0.3 on Python 3.13:
+The fourth version of the Log Triage server, in `solution/`, on top of what practices 1 to 3 built, with FastMCP 4.0.3 on Python 3.13:
 
 - `--http HOST:PORT`: stateless streamable HTTP at `/mcp`, set up in `src/logtriage/http.py`, with the HTTP server's own log lines on stderr, never on stdout;
 - callers from the bearer tokens in `LOG_TRIAGE_TOKENS`, the 401 answer and the `Origin` check, in `src/logtriage/auth.py`;
@@ -22,7 +22,7 @@ Over stdio nothing changes: it stays the default, with the one caller `local`. A
 `CONTRACT.md` in this folder describes the whole server after this practice. Build one coding-agent prompt at a time, only what that prompt asks for. Use the file paths named by the prompt; the README is the project guide, not the task source.
 
 ## What not to build
-This is the last practice. Don't add, even where it looks useful:
+Practice 5 adds telemetry. Do not build it in this stage. Don't add, even where it looks useful:
 
 - OAuth, token issuing, or any HTTP route other than `/mcp`;
 - callers from anywhere but `LOG_TRIAGE_TOKENS`, or tokens written to a file;

@@ -60,6 +60,9 @@ flowchart TD
 The diagram shows which calls create reusable state and which calls reopen bounded evidence or documents without repeating a whole scan.
 
 ## MCP surface in this stage
+This stage has six tools, two resources, and two resource templates. It publishes no MCP prompts.
+
+### Tools
 | Tool | Main goal | Example input |
 |---|---|---|
 | `list_logs` | List files and detected formats | `{"path":"vms"}` |
@@ -69,7 +72,35 @@ The diagram shows which calls create reusable state and which calls reopen bound
 | `group_lines` | Page the lines of one stored group | `{"scan_id":"<scan-id>","group_id":"<group-id>"}` |
 | `read_lines` | Read a bounded window around one line | `{"path":"vms/db-01/postgres.log","line":120}` |
 
+Use `summarize_logs` for the broad pass, then reuse its `scan_id` with `group_lines`. Use `read_lines` when a search result or group line needs nearby context. `search_logs` remains the better choice when you already know the expression to find.
+
+Example summary input:
+
+```json
+{
+  "path": "vms/cache-01/syslog.log",
+  "since": "2026-09-07",
+  "until": "2026-09-08",
+  "min_level": "any",
+  "limit": 20
+}
+```
+
+The result contains a random `scan_id`, an `expires_at` value, and the normal summary fields. A later `group_lines` call uses the returned identifiers:
+
+```json
+{
+  "scan_id": "s_0123456789abcdef",
+  "group_id": "0123456789ab",
+  "limit": 50,
+  "offset": 0
+}
+```
+
 Use the ids and file paths returned by your running server. The placeholders above are illustrative.
+
+### Resources
+Resources let a host fetch addressable context without asking the model to choose a tool.
 
 | URI | Kind | Goal | Example use |
 |---|---|---|---|
@@ -77,6 +108,8 @@ Use the ids and file paths returned by your running server. The placeholders abo
 | `triage://reports` | Resource | List valid saved findings | Find reports the server may reopen |
 | `triage://reports/{name}` | Template | Read one listed finding | Open a report by its returned name |
 | `triage://scans/{scan_id}` | Template | Read one stored summary | Reopen a valid scan by its returned id |
+
+Resource lists and reads carry the contract's private freshness metadata. An unknown report, expired scan, or another caller's scan returns a resource-not-found protocol error.
 
 ### Prompts
 This stage publishes no MCP prompts. Coding-agent prompts belong to the lesson and are not part of the server surface.
@@ -119,6 +152,7 @@ Use Python 3.13, uv 0.11 or newer, FastMCP 4.0.3 from the server lockfile, Node.
 Run these commands from the repository root:
 
 ```bash
+# Run from the repository root.
 uv run --project 1-surface-and-contract/checks pytest 1-surface-and-contract/checks
 uv sync --project 2-state-safety-errors/checks --locked
 uv run --project 2-state-safety-errors/checks pytest 2-state-safety-errors/checks
@@ -141,6 +175,7 @@ Use the lesson for the coding-agent prompts and the investigation case.
 Run both suites from the repository root:
 
 ```bash
+# Run from the repository root.
 uv run --project 2-state-safety-errors/checks pytest 2-state-safety-errors/checks
 uv run --project 1-surface-and-contract/checks pytest 1-surface-and-contract/checks
 ```
@@ -157,6 +192,7 @@ uv run --project 1-surface-and-contract/checks pytest 1-surface-and-contract/che
 Run one file alone from the repository root, for example:
 
 ```bash
+# Run from the repository root.
 uv run --project 2-state-safety-errors/checks pytest 2-state-safety-errors/checks/test_t6_paths.py
 ```
 

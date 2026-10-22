@@ -17,7 +17,7 @@ Tick each item when it is true, then commit. Where an item asks for a note, writ
 ## Server
 - [ ] `uv run --project 4-agents-and-clients/checks pytest 4-agents-and-clients/checks` passes from the repository root.
 - [ ] The practice 1 to 3 checks still pass, and so does `uv run --project solution pytest solution/tests`.
-- [ ] Every build checkpoint was true when its coding-agent prompt finished. Note any that wasn't, and what you did about it.
+- [ ] Every checkpoint in the practice lesson was true when its prompt finished. Note any that wasn't, and what you did about it.
 - [ ] With `--http`, the server's stdout stays empty, and anything it logs goes to stderr.
 - [ ] No token is written in any file you commit, and `.mcp.json` is not in the commit.
 - [ ] Nothing in `solution/` outside `tests/` and `scripts/`, the prompt's text included, names a host, a date, an address or a message from `s3_logs/`.

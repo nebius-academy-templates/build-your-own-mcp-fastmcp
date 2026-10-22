@@ -3,7 +3,7 @@
 **Related**:
 
 > [README](README.md): The tasks these items close
-> [interface](interface.md): Your design, which the Inspector items compare against
+> [interface](interface.md): Your original design and notes about differences from the contract
 
 Tick each item when it is true, then commit. Where an item asks for a note, write it under the item.
 
@@ -19,7 +19,7 @@ Tick each item when it is true, then commit. Where an item asks for a note, writ
 
 ## Server
 - [ ] `uv run --project 1-surface-and-contract/checks pytest 1-surface-and-contract/checks` passes, run from the repository root.
-- [ ] Every checkpoint in the README was true when its prompt finished. Note any that wasn't, and what you did about it.
+- [ ] Every checkpoint in the practice lesson was true when its prompt finished. Note any that wasn't, and what you did about it.
 - [ ] Nothing in `solution/` names a host, a date, an address or a message from `s3_logs/`.
 - [ ] `solution/README.md` says how to install and run your server.
 
@@ -27,10 +27,11 @@ Tick each item when it is true, then commit. Where an item asks for a note, writ
 - [ ] `tools/list` on `log-triage` shows four tools, each with the title, annotations, input schema and output schema that `CONTRACT.md` gives.
 - [ ] `tools/list` on `log-triage-read-only` shows the same tools without `save_finding`.
 - [ ] The `summarize_logs` call returns `structuredContent` and one text block with the same object.
-- [ ] What the Inspector shows matches your `interface.md`. Note what surprised you.
+- [ ] What the Inspector shows matches `CONTRACT.md`; `interface.md` keeps your original choices and explains any differences.
+- [ ] Every description says what its tool does, when to use it and how it differs from a nearby tool where that choice could be unclear.
 
 ## Case
-- [ ] The agent had no tools except your server's.
+- [ ] The agent used only your server's tools to solve the case; the transcript shows no other tool calls.
 - [ ] The finding in `reports/` explains why the customer got an error page, and when.
 - [ ] Every piece of evidence names a file and a line, and you checked that at least three of those lines say what the finding claims.
 - [ ] Note which tools the agent called, and anything you changed after watching it.
