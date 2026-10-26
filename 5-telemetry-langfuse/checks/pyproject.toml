@@ -1,0 +1,16 @@
+[project]
+name = "log-triage-checks-5"
+version = "0.5.0"
+description = "Black-box checks for practice 5: they start your server with telemetry on or off and read the spans it exports."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "opentelemetry-proto==1.44.0",
+    "pytest>=8.3",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+addopts = "-ra --tb=short"
